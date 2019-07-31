@@ -3,6 +3,10 @@
 credentials.py
 .project
 .pydevproject
+/data/
+/ressources/
+/.ipynb_checkpoints/
+/src/.ipynb_checkpoints/
 
 # Compiled source #
 ###################

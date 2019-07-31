@@ -5,13 +5,11 @@ Created on Oct 29, 2017
 '''
 #!/usr/bin/env python
 import cherrypy
-import os
 import sys
 import threading
 import traceback
 import webbrowser
 
-from base64 import b64encode
 from fitbit.api import Fitbit
 from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenError
 
@@ -73,21 +71,3 @@ class OAuth2Server:
         """ Shutdown cherrypy in one second, if it's running """
         if cherrypy.engine.state == cherrypy.engine.states.STARTED:
             threading.Timer(1, cherrypy.engine.exit).start()
-
-
-if __name__ == '__main__':
-
-    if not (len(sys.argv) == 3):
-        print("Arguments: client_id and client_secret")
-        sys.exit(1)
-
-    server = OAuth2Server(*sys.argv[1:])
-    server.browser_authorize()
-
-    profile = server.fitbit.user_profile_get()
-    print('You are authorized to access data for the user: {}'.format(
-        profile['user']['fullName']))
-
-    print('TOKEN\n=====\n')
-    for key, value in server.fitbit.client.session.token.items():
-        print('{} = {}'.format(key, value))
