@@ -7,6 +7,7 @@ coreFunctions/credentials.py
 /ressources/
 /.ipynb_checkpoints/
 /notebooks/.ipynb_checkpoints/
+/venv/
 
 # Compiled source #
 ###################

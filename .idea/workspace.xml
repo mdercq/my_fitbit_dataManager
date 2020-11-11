@@ -16,43 +16,20 @@
         <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
       </path>
     </expand>
-    <select />
+    <select>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:master" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9bdd033a-a919-44dd-97ee-b6e276e9d6d2" name="Default" comment="running&#10;Better communication&#10;Remove old function">
-      <change afterPath="$PROJECT_DIR$/src/coreFunctions/myfitbit_ex.ini" afterDir="false" />
+    <list default="true" id="9bdd033a-a919-44dd-97ee-b6e276e9d6d2" name="Default" comment="refact: cleaning">
+      <change afterPath="$PROJECT_DIR$/src/coreFunctions/.ipynb_checkpoints/data_collector-checkpoint.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/coreFunctions/myfitbit.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/.ipynb_checkpoints/gather_keys_oauth2-checkpoint.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/.travis.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/AUTHORS" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/CHANGELOG.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/MANIFEST.in" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/README.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/docs/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/docs/conf.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/docs/index.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/docs/make.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/fitbit/.ipynb_checkpoints/api-checkpoint.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/fitbit/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/fitbit/api.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/fitbit/compliance.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/fitbit/exceptions.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/fitbit/utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/fitbit_tests/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/fitbit_tests/test_api.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/fitbit_tests/test_auth.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/fitbit_tests/test_exceptions.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/gather_keys_oauth2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/requirements/.ipynb_checkpoints/base-checkpoint.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/requirements/.ipynb_checkpoints/dev-checkpoint.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/requirements/.ipynb_checkpoints/test-checkpoint.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/requirements/base.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/requirements/dev.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/requirements/test.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/setup.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pythonFitbitMaster/tox.ini" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -238,7 +215,14 @@
       <option name="project" value="LOCAL" />
       <updated>1605115526540</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="refact: cleaning">
+      <created>1605115973212</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1605115973212</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -246,7 +230,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -262,7 +258,8 @@
     <MESSAGE value="test" />
     <MESSAGE value="cleaning" />
     <MESSAGE value="running&#10;Better communication&#10;Remove old function" />
-    <option name="LAST_COMMIT_MESSAGE" value="running&#10;Better communication&#10;Remove old function" />
+    <MESSAGE value="refact: cleaning" />
+    <option name="LAST_COMMIT_MESSAGE" value="refact: cleaning" />
   </component>
   <component name="WindowStateProjectService">
     <state x="1715" y="359" width="629" height="403" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1605115816525">
@@ -289,10 +286,10 @@
       <screen x="1080" y="0" width="1920" height="1080" />
     </state>
     <state x="1529" y="188" width="1022" height="737" key="SettingsEditor/1080.0.1920.1080/0.27.1080.1893@1080.0.1920.1080" timestamp="1605093544376" />
-    <state x="1635" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1605115551788">
+    <state x="1635" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1605115998721">
       <screen x="1080" y="0" width="1920" height="1080" />
     </state>
-    <state x="1635" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/1080.0.1920.1080/0.27.1080.1893@1080.0.1920.1080" timestamp="1605115551788" />
+    <state x="1635" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/1080.0.1920.1080/0.27.1080.1893@1080.0.1920.1080" timestamp="1605115998721" />
     <state x="1180" y="127" width="1720" height="853" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1605115326019">
       <screen x="1080" y="0" width="1920" height="1080" />
     </state>
