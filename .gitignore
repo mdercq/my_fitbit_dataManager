@@ -1,12 +1,12 @@
 # secrets#
 #######
-credentials.py
+coreFunctions/credentials.py
 .project
 .pydevproject
 /data/
 /ressources/
 /.ipynb_checkpoints/
-/src/.ipynb_checkpoints/
+/notebooks/.ipynb_checkpoints/
 
 # Compiled source #
 ###################
