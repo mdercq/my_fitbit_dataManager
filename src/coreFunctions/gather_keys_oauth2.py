@@ -24,11 +24,9 @@ class OAuth2Server:
         self.failure_html = """
             <h1>ERROR: %s</h1><br/><h3>You can close this window</h3>%s"""
 
-        self.fitbit = Fitbit(
-            client_id,
-            client_secret,
-            redirect_uri=redirect_uri,
-            timeout=10)
+        self.fitbit = Fitbit(client_id, client_secret,
+                             redirect_uri=redirect_uri,
+                             timeout=10)
 
     def browser_authorize(self):
         """

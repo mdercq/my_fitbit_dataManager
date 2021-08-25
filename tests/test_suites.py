@@ -46,7 +46,7 @@ class TestSuite(TestCase):
         list_of_files = self.collector._get_files_in_container('intraday_heart')
         last_collected_date = self.collector._get_last_collected_date(list_of_files)
         first_date_to_collect = self.collector._first_date_to_collect(last_collected_date)
-        list_of_dates = self.collector._date_range(first_date_to_collect, self.collector.yesterday())
+        list_of_dates = self.collector._date_range(first_date_to_collect, self.collector._yesterday())
         print(list_of_dates)
 
 

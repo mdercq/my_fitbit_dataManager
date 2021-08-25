@@ -1,3 +1,8 @@
 {
-  "::TestSuite::test_01_read_settings": true
+  "::TestSuite::test_01_read_settings": true,
+  "test_suites.py::TestCase": true,
+  "test_suites.py::TestSuite": true,
+  "test_suites.py::TestSuite::test_02_get_files_in_container": true,
+  "test_suites.py::TestSuite::test_03_get_last_collected_date": true,
+  "test_suites.py::TestSuite::test_04_get_last_collected_date": true
 }

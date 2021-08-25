@@ -3,7 +3,9 @@ import os
 import configparser
 import pandas as pd
 import fitbit
+from fitbit.exceptions import HTTPTooManyRequests
 import time
+import logging
 from datetime import datetime, timedelta
 from .gather_keys_oauth2 import OAuth2Server
 
@@ -18,7 +20,7 @@ class DataCollector(object):
         """Prepare the properties"""
         self.config = configparser.ConfigParser()
         self.here = os.path.dirname(os.path.realpath(__file__))
-        self.config_filename = './myfitbit.ini'
+        self.config_filename = './Fitbit_ex.ini'
 
         # Authorisation and access
         self.client_id = None
@@ -34,9 +36,13 @@ class DataCollector(object):
         self.initial_date = None
         self.data_types = [{'data_type': 'heart_rate_data',
                             'container': 'intraday_heart',
-                            'action': self.heart_rate_data},
-                           {'data_type': 'sleep_data', 'container': None},
-                           {'data_type': 'sleep_summary', 'container': None},
+                            'action': self._heart_rate_data},
+                           {'data_type': 'sleep_data',
+                            'container': 'sleep_data',
+                            'action': self._sleep_data},
+                           {'data_type': 'sleep_summary',
+                            'container': 'sleep_summary',
+                            'action': self._sleep_summary},
                            {'data_type': 'steps', 'container': None},
                            {'data_type': 'floors', 'container': None},
                            {'data_type': 'daily_distance', 'container': None},
@@ -47,6 +53,10 @@ class DataCollector(object):
         self.request_counter_limit = None
         self.request_counter = 0
         self.date_format = "%Y%m%d"
+
+        # configure the logger
+        self._config_logger()
+        logging.info("=" * 20 + " New Start " + "=" * 20)
 
     # region public methods
     def read_settings(self):
@@ -61,7 +71,7 @@ class DataCollector(object):
 
     def get_credentials(self):
         """A couple of tokens are to be collected before getting access
-        FFor obtaining Access-token and Refresh-token"""
+        For obtaining Access-token and Refresh-token"""
         self.server = OAuth2Server(self.client_id, self.client_secret)
         self.server.browser_authorize()
 
@@ -78,25 +88,43 @@ class DataCollector(object):
         """Will collect all missing data. Missing data are defined by what is found in folders."""
         if not self.got_credentials:
             # just in case the user calls this function before connecting to fitbit server
-            print('credentials were not collected')
+            logging.warning('credentials were not collected')
             return False
         for data_requested in self.data_types:
             self._request_data(data_requested)
+
+        logging.info("=" * 10 + " End " + "="*10)
     # endregion
 
     # region tools
+    @staticmethod
+    def _config_logger():
+        log_name = 'logs/{:%Y-%m-%d}.txt'.format(datetime.now())
+        logging.basicConfig(filename=log_name,
+                            format='%(asctime)s %(message)s',
+                            datefmt='%Y/%m/%d %H:%M:%S',
+                            level=logging.INFO)
+
     @staticmethod
     def _date_range(datetime1, datetime2):
         for n in range(int((datetime2 - datetime1).days) + 1):
             yield datetime1 + timedelta(n)
 
     @staticmethod
-    def yesterday():
+    def _yesterday():
         return datetime.now() - timedelta(1)
 
     @staticmethod
     def _first_date_to_collect(last_collected_date):
         return last_collected_date + timedelta(days=1)
+
+    def _pause(self):
+        # need to wait for 1 hour = 60 minutes * 60 seconds = 3600 seconds
+        # I add 5 minutes = 5 * 60 seconds = 300 seconds
+        logging.info("Reached the limit of {} requests to Fitbit per hour. "
+                     "Waiting 1h".format(self.request_counter_limit))
+        time.sleep(3600 + 300)
+        self.request_counter = 0
     # endregion
 
     # region data collection
@@ -107,31 +135,27 @@ class DataCollector(object):
         # list files in data_container
         if data_requested['container'] is None:
             return False
+        logging.info("Collecting data for " + data_requested['data_type'])
         list_of_files = self._get_files_in_container(data_requested['container'])
         # get last collected date
         last_collected_date = self._get_last_collected_date(list_of_files)
         # first date to collect is last collected date + 1
         first_date_to_collect = self._first_date_to_collect(last_collected_date)
         # get list if dates to collect
-        list_of_dates = self._date_range(first_date_to_collect, self.yesterday())
-
-        print('Last day collected so far: {}/nThe First day to collect will then be {}'.format(last_collected_date,
-                                                                                               first_date_to_collect))
+        list_of_dates = self._date_range(first_date_to_collect, self._yesterday())
+        logging.info('Last day collected so far: {}. '
+                     'The first day to collect will then be {}'.format(last_collected_date, first_date_to_collect))
 
         # collect the corresponding data
         for date_to_collect in list_of_dates:
             if self.request_counter <= self.request_counter_limit - 1:
                 self._collect_data_type(data_requested, date_to_collect)
-                print("Collecting {} for the day {} (counter = {})".format(data_requested['data_type'],
-                                                                           date_to_collect,
-                                                                           self.request_counter))
+                logging.debug("Collected data for {} "
+                              "(counter = {})".format(date_to_collect, self.request_counter))
                 self.request_counter += 1
             else:
-                # need to wait for 1 hour = 60min * 60seconds = 3600 seconds
-                # I add 5 minutes = 5 * 60 seconds = 300 seconds
-                print("Reached the limit of {} requests to Fitbit per hour. Waiting 1h".format(self.request_counter_limit))
-                time.sleep(3600 + 300)
-                self.request_counter = 0
+                # I prefer to control the request counter myself
+                self._pause()
         return True
 
     def _get_files_in_container(self, container):
@@ -149,15 +173,22 @@ class DataCollector(object):
         else:
             return self.initial_date - timedelta(days=1)
 
-    @staticmethod
-    def _collect_data_type(data_requested, date_to_collect):
+    def _collect_data_type(self, data_requested, date_to_collect):
         """the action to perform is selected from a case selector"""
-        data_requested['action'](data_requested['container'], date_to_collect)
+        while True:
+            try:
+                data_requested['action'](data_requested['container'], date_to_collect)
+            except HTTPTooManyRequests:
+                self._pause()
+                continue
+            except Exception as ex:
+                logging.info("Error when try to collect data => there may be nothing to collect")
+            break
         return True
     # endregion
 
     # region collectors
-    def heart_rate_data(self, folder_for_collection, date_to_collect):
+    def _heart_rate_data(self, folder_for_collection, date_to_collect):
         """Get Heart Rate Time Series
         The Get Heart Rate Time Series endpoint returns time series data in the specified range for a given resource
         in the format requested using units in the unit systems that corresponds to the Accept-Language header provided.
@@ -168,18 +199,12 @@ class DataCollector(object):
             There are two acceptable formats for retrieving time series data:
             GET https://api.fitbit.com/1/user/[user-id]/activities/heart/date/[date]/[period].json
             GET https://api.fitbit.com/1/user/[user-id]/activities/heart/date/[base-date]/[end-date].json"""
-        formated_date_to_collect = str(date_to_collect.strftime("%Y%m%d"))
-        filename = os.path.join(self.databases_location, folder_for_collection, formated_date_to_collect + '.csv')
-        file_exists = False
-        if not file_exists:
-            formated_date_to_collect = str(date_to_collect.strftime("%Y-%m-%d"))
-            try:
-                fit_stats_hr = self.auth2_client.intraday_time_series('activities/heart',
-                                                                      base_date=formated_date_to_collect,
-                                                                      detail_level='1sec')
-            except fitbit.exceptions.HTTPTooManyRequests:
-                return False
-
+        try:
+            format_date_to_collect = str(date_to_collect.strftime(self.date_format))
+            filename = os.path.join(self.databases_location, folder_for_collection, format_date_to_collect + '.csv')
+            fit_stats_hr = self.auth2_client.intraday_time_series('activities/heart',
+                                                                  base_date=format_date_to_collect,
+                                                                  detail_level='1sec')
             time_list = []
             val_list = []
 
@@ -187,32 +212,31 @@ class DataCollector(object):
                 val_list.append(i['value'])
                 time_list.append(i['time'])
 
-            heartdf = pd.DataFrame({'Heart Rate': val_list, 'Time': time_list})
-            heartdf.to_csv(filename, columns=['Time', 'Heart Rate'], header=True, index=False)
+            heart_df = pd.DataFrame({'Heart Rate': val_list, 'Time': time_list})
+            heart_df.to_csv(filename, columns=['Time', 'Heart Rate'], header=True, index=False)
+        finally:
             return True
 
-    def sleep_data(self, date_to_collect):
-        """
-            Sleep data on the night of ....
-        """
-        formated_date_to_collect = str(date_to_collect.strftime("%Y-%m-%d"))
-        fit_stats_sleep = self.auth2_client.sleep(date=formated_date_to_collect)
-        stime_list = []
-        sval_list = []
-        formated_date_to_collect = str(date_to_collect.strftime("%Y%m%d"))
+    def _sleep_data(self, folder_for_collection, date_to_collect):
+        """ Sleep data on the night of .... """
+        format_date_to_collect = str(date_to_collect.strftime(self.date_format))
+        filename = os.path.join(self.databases_location, folder_for_collection, format_date_to_collect + '.csv')
+        fit_stats_sleep = self.auth2_client.sleep(date=format_date_to_collect)
+        time_list = []
+        val_list = []
         for i in fit_stats_sleep['sleep'][0]['minuteData']:
-            stime_list.append(i['dateTime'])
-            sval_list.append(i['value'])
+            time_list.append(i['dateTime'])
+            val_list.append(i['value'])
 
-        sleepdf = pd.DataFrame({'State': sval_list, 'Time': stime_list})
-        sleepdf['Interpreted'] = sleepdf['State'].map({'2': 'Awake', '3': 'Very Awake', '1': 'Asleep'})
-        sleepdf.to_csv('../data/sleep/sleep_' + formated_date_to_collect + '.csv',
-                       columns=['Time', 'State', 'Interpreted'], header=True, index=False)
+        sleep_df = pd.DataFrame({'State': val_list, 'Time': time_list})
+        sleep_df['Interpreted'] = sleep_df['State'].map({'2': 'Awake', '3': 'Very Awake', '1': 'Asleep'})
+        sleep_df.to_csv(filename, columns=['Time', 'State', 'Interpreted'], header=True, index=False)
 
-    def sleep_summary(self, date_to_collect):
-        """Sleep Summary on the night of ...."""
-        formated_date_to_collect = str(date_to_collect.strftime("%Y-%m-%d"))
-        fit_stats_sum = self.auth2_client.sleep(date=formated_date_to_collect)['sleep'][0]
+    def _sleep_summary(self, folder_for_collection, date_to_collect):
+        """ Sleep summary on the night of .... """
+        format_date_to_collect = str(date_to_collect.strftime(self.date_format))
+        filename = os.path.join(self.databases_location, folder_for_collection, format_date_to_collect + '.csv')
+        fit_stats_sum = self.auth2_client.sleep(date=format_date_to_collect)['sleep'][0]
 
         ssummarydf = pd.DataFrame({'Date': fit_stats_sum['dateOfSleep'],
                                    'MainSleep': fit_stats_sum['isMainSleep'],
@@ -225,7 +249,5 @@ class DataCollector(object):
                                    'Restless Duration': fit_stats_sum['restlessDuration'],
                                    'Time in Bed': fit_stats_sum['timeInBed']
                                    }, index=[0])
-        formated_date_to_collect = str(date_to_collect.strftime("%Y%m%d"))
-        ssummarydf.to_csv('../data/sleep_summary/sleep_summary_' + formated_date_to_collect + '.csv',
-                          header=True, index=False)
+        ssummarydf.to_csv(filename, header=True, index=False)
     # endregion

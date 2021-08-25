@@ -1,0 +1,190 @@
+2021/08/25 13:19:39 ==================== New Start ====================
+2021/08/25 13:19:39 [25/Aug/2021:13:19:39] ENGINE Listening for SIGTERM.
+2021/08/25 13:19:39 [25/Aug/2021:13:19:39] ENGINE Listening for SIGHUP.
+2021/08/25 13:19:39 [25/Aug/2021:13:19:39] ENGINE Listening for SIGUSR1.
+2021/08/25 13:19:39 [25/Aug/2021:13:19:39] ENGINE Bus STARTING
+2021/08/25 13:19:39 [25/Aug/2021:13:19:39] ENGINE Started monitor thread 'Autoreloader'.
+2021/08/25 13:19:39 [25/Aug/2021:13:19:39] ENGINE Serving on http://127.0.0.1:8080
+2021/08/25 13:19:39 [25/Aug/2021:13:19:39] ENGINE Bus STARTED
+2021/08/25 13:19:41 127.0.0.1 - - [25/Aug/2021:13:19:41] "GET /?code=d58a46451713823c1479b261285a90252112b288&state=sPKrf3317gCuzmF3Ns7ZwyU5STXj4C HTTP/1.1" 200 122 "" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0"
+2021/08/25 13:19:41 127.0.0.1 - - [25/Aug/2021:13:19:41] "GET /favicon.ico HTTP/1.1" 200 1406 "http://127.0.0.1:8080/?code=d58a46451713823c1479b261285a90252112b288&state=sPKrf3317gCuzmF3Ns7ZwyU5STXj4C" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0"
+2021/08/25 13:19:42 [25/Aug/2021:13:19:42] ENGINE Bus STOPPING
+2021/08/25 13:19:42 [25/Aug/2021:13:19:42] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('127.0.0.1', 8080)) shut down
+2021/08/25 13:19:42 [25/Aug/2021:13:19:42] ENGINE Stopped thread 'Autoreloader'.
+2021/08/25 13:19:42 [25/Aug/2021:13:19:42] ENGINE Bus STOPPED
+2021/08/25 13:19:42 [25/Aug/2021:13:19:42] ENGINE Bus EXITING
+2021/08/25 13:19:42 [25/Aug/2021:13:19:42] ENGINE Bus EXITED
+2021/08/25 13:19:42 [25/Aug/2021:13:19:42] ENGINE Waiting for child threads to terminate...
+2021/08/25 13:19:42 Collecting data for heart_rate_data
+2021/08/25 13:19:42 Last day collected so far: 2021-08-22 00:00:00. The first day to collect will then be 2021-08-23 00:00:00
+2021/08/25 13:19:43 Collecting data for sleep_data
+2021/08/25 13:36:47 ==================== New Start ====================
+2021/08/25 13:36:47 [25/Aug/2021:13:36:47] ENGINE Listening for SIGTERM.
+2021/08/25 13:36:47 [25/Aug/2021:13:36:47] ENGINE Listening for SIGHUP.
+2021/08/25 13:36:47 [25/Aug/2021:13:36:47] ENGINE Listening for SIGUSR1.
+2021/08/25 13:36:47 [25/Aug/2021:13:36:47] ENGINE Bus STARTING
+2021/08/25 13:36:47 [25/Aug/2021:13:36:47] ENGINE Started monitor thread 'Autoreloader'.
+2021/08/25 13:36:47 [25/Aug/2021:13:36:47] ENGINE Serving on http://127.0.0.1:8080
+2021/08/25 13:36:47 [25/Aug/2021:13:36:47] ENGINE Bus STARTED
+2021/08/25 13:36:48 127.0.0.1 - - [25/Aug/2021:13:36:48] "GET /?code=6b8eebdc5ffd0391d0c90c4e166bcbe48898c294&state=z9g7wRVm6SyanA2an2Osg2noBfapNZ HTTP/1.1" 200 122 "" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0"
+2021/08/25 13:36:49 127.0.0.1 - - [25/Aug/2021:13:36:49] "GET /favicon.ico HTTP/1.1" 200 1406 "http://127.0.0.1:8080/?code=6b8eebdc5ffd0391d0c90c4e166bcbe48898c294&state=z9g7wRVm6SyanA2an2Osg2noBfapNZ" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0"
+2021/08/25 13:36:49 [25/Aug/2021:13:36:49] ENGINE Bus STOPPING
+2021/08/25 13:36:49 [25/Aug/2021:13:36:49] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('127.0.0.1', 8080)) shut down
+2021/08/25 13:36:49 [25/Aug/2021:13:36:49] ENGINE Stopped thread 'Autoreloader'.
+2021/08/25 13:36:49 [25/Aug/2021:13:36:49] ENGINE Bus STOPPED
+2021/08/25 13:36:49 [25/Aug/2021:13:36:49] ENGINE Bus EXITING
+2021/08/25 13:36:49 [25/Aug/2021:13:36:49] ENGINE Bus EXITED
+2021/08/25 13:36:50 [25/Aug/2021:13:36:50] ENGINE Waiting for child threads to terminate...
+2021/08/25 13:36:50 Collecting data for heart_rate_data
+2021/08/25 13:36:50 Last day collected so far: 2021-08-22 00:00:00. The first day to collect will then be 2021-08-23 00:00:00
+2021/08/25 13:36:50 Collecting data for sleep_data
+2021/08/25 13:36:50 Last day collected so far: 2020-04-20 00:00:00. The first day to collect will then be 2020-04-21 00:00:00
+2021/08/25 13:36:51 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:51 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:51 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:51 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:52 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:52 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:52 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:52 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:52 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:52 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:53 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:53 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:53 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:53 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:53 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:54 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:54 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:54 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:54 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:54 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:54 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:55 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:55 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:55 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:55 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:55 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:55 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:56 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:56 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:56 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:56 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:56 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:56 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:57 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:57 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:57 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:57 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:57 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:58 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:58 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:58 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:58 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:58 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:58 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:59 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:59 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:59 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:59 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:36:59 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:00 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:00 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:00 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:00 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:00 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:00 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:01 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:01 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:01 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:01 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:01 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:01 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:02 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:02 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:02 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:02 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:02 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:03 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:03 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:03 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:03 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:03 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:04 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:04 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:04 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:04 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:04 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:04 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:05 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:05 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:05 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:05 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:05 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:05 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:06 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:06 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:06 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:06 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:06 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:06 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:07 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:07 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:07 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:07 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:07 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:07 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:08 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:08 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:08 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:08 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:08 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:09 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:09 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:09 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:09 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:09 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:09 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:10 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:10 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:10 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:10 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:10 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:10 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:11 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:11 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:11 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:11 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:11 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:12 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:12 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:12 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:12 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:12 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:13 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:13 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:13 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:13 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:13 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:13 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:14 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:14 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:14 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:14 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:14 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:14 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:15 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:15 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:15 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:15 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:15 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:15 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:16 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:16 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:16 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:16 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:16 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:16 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:17 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:17 Error when try to collect data => there may be nothing to collect
+2021/08/25 13:37:17 Reached the limit of 150 requests to Fitbit per hour. Waiting 1h

@@ -8,4 +8,3 @@ fitbit_collector = DataCollector()
 fitbit_collector.read_settings()
 fitbit_collector.get_credentials()
 fitbit_collector.collect_data()
-
