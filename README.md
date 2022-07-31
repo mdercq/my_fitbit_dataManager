@@ -1,4 +1,4 @@
-my_fitbit_dataManager
+# my_fitbit_dataManager
 
 ## References
 ___Initial data science article___  
@@ -19,7 +19,7 @@ https://python-fitbit.readthedocs.io/en/latest/
 
 ## Issues
 _Can't connect to HTTPS URL because the SSL module is not available._  
-=> install openSSL on windows
+=> install openSSL on Windows
 
 ## Web API
 ___user-id___ 	    The encoded ID of the user. Use "-" (dash) for current logged-in user.  

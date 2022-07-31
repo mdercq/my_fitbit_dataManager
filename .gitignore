@@ -6,19 +6,11 @@
 # Vagrant
 .vagrant/
 
-# Mac/OSX
-.DS_Store
-
-# Windows
-Thumbs.db
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.so
 
 # Distribution / packaging
 .Python
@@ -67,7 +59,6 @@ coverage.xml
 *.pot
 
 # Django stuff:
-*.log
 local_settings.py
 db.sqlite3
 

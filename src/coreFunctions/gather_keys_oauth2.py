@@ -1,9 +1,7 @@
-'''
+"""
 Created on Oct 29, 2017
-
 @author: fairvel
-'''
-#!/usr/bin/env python
+"""
 import cherrypy
 import sys
 import threading
@@ -15,8 +13,7 @@ from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenEr
 
 
 class OAuth2Server:
-    def __init__(self, client_id, client_secret,
-                 redirect_uri='http://127.0.0.1:8080/'):
+    def __init__(self, client_id, client_secret, redirect_uri='http://127.0.0.1:8080'):
         """ Initialize the FitbitOauth2Client """
         self.success_html = """
             <h1>You are now authorized to access the Fitbit API!</h1>
@@ -24,11 +21,9 @@ class OAuth2Server:
         self.failure_html = """
             <h1>ERROR: %s</h1><br/><h3>You can close this window</h3>%s"""
 
-        self.fitbit = Fitbit(
-            client_id,
-            client_secret,
-            redirect_uri=redirect_uri,
-            timeout=10)
+        self.fitbit = Fitbit(client_id, client_secret,
+                             redirect_uri=redirect_uri,
+                             timeout=10)
 
     def browser_authorize(self):
         """
@@ -58,7 +53,7 @@ class OAuth2Server:
                 error = self._fmt_failure('CSRF Warning! Mismatching state')
         else:
             error = self._fmt_failure('Unknown error while authenticating')
-        # Use a thread to shutdown cherrypy so we can return HTML first
+        # Use a thread to shut down cherrypy, so we can return HTML first
         self._shutdown_cherrypy()
         return error if error else self.success_html
 
@@ -67,7 +62,8 @@ class OAuth2Server:
         tb_html = '<pre>%s</pre>' % ('\n'.join(tb)) if tb else ''
         return self.failure_html % (message, tb_html)
 
-    def _shutdown_cherrypy(self):
+    @staticmethod
+    def _shutdown_cherrypy():
         """ Shutdown cherrypy in one second, if it's running """
         if cherrypy.engine.state == cherrypy.engine.states.STARTED:
             threading.Timer(1, cherrypy.engine.exit).start()

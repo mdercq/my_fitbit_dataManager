@@ -4,8 +4,16 @@ Created on Oct 28, 2017
 """
 from src.coreFunctions.data_collector import DataCollector
 
-fitbit_collector = DataCollector()
-fitbit_collector.read_settings()
-fitbit_collector.get_credentials()
-fitbit_collector.collect_data()
 
+def main():
+    fitbit_collector = DataCollector()
+    fitbit_collector.read_settings()
+    fitbit_collector.get_credentials()
+    fitbit_collector.collect_data()
+
+
+if __name__ == '__main__':
+    main()
+
+# **********************************************************************70
+# leave one line
