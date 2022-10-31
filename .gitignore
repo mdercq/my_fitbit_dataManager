@@ -171,4 +171,4 @@ Thumbs.db
 *.bak
 *.swp
 
-!/src/coreFunctions/myfitbit.ini
+!/src/settings/myfitbit.ini

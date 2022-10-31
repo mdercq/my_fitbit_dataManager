@@ -9,6 +9,7 @@ import fitbit
 from fitbit.exceptions import HTTPTooManyRequests
 from datetime import datetime, timedelta
 from .gather_keys_oauth2 import OAuth2Server
+from ..settings import settings as set
 
 
 class DataCollector(object):
@@ -21,7 +22,7 @@ class DataCollector(object):
         """Prepare the properties"""
         self.config = configparser.ConfigParser()
         self.here = os.path.dirname(os.path.realpath(__file__))
-        self.config_filename = './myfitbit.ini'
+        self.config_filename = '../settings/myfitbit.ini'
 
         # Authorisation and access
         self.client_id = None
@@ -48,12 +49,12 @@ class DataCollector(object):
 
         self.request_counter_limit = None
         self.request_counter = 0
-        self.date_format_for_request = "%Y-%m-%d"
-        self.date_format_for_file = "%Y%m%d"
+        self.date_format_for_request = set.ISO_FORMAT
+        self.date_format_for_file = set.ISO_COMPACT
 
         # configure the logger
         self._config_logger()
-        logging.info("=" * 20 + " New Start " + "=" * 20)
+        logging.info(set.SEP + " New Start " + set.SEP)
 
     # region public methods
     def read_settings(self):
@@ -90,7 +91,7 @@ class DataCollector(object):
         for data_requested in self.data_types:
             self._request_data(data_requested)
 
-        logging.info("=" * 20 + " End " + "=" * 20)
+        logging.info(set.SEP + " End " + set.SEP)
     # endregion
 
     # region tools
@@ -99,7 +100,7 @@ class DataCollector(object):
         log_name = 'logs/{:%Y-%m-%d}.txt'.format(datetime.now())
         logging.basicConfig(filename=log_name,
                             format='%(asctime)s %(message)s',
-                            datefmt='%Y/%m/%d %H:%M:%S',
+                            datefmt=set.ISO_COMPLETE,
                             level=logging.DEBUG)
 
     @staticmethod

@@ -1,5 +1,31 @@
 # my_fitbit_dataManager
 
+## Objectives
+Collect data from my fitbit account.
+2 goals:
+* Collect my data, and not rely only of fitbit servers
+* process my data the way I want: I tested the advanced services of fitbit, 
+and found out I can do the data engineering myself.
+
+I am not trying to manipulate the remote database.
+
+Data processing is done apart with Dataiku platform.
+
+### Data collected
+* Activity: Fitbit user's daily activity data
+  * step count, distance, elevation, floors, calories burned, active minutes, activity goals, exercise details, etc. The Activity endpoints support returning Intraday data (see Intraday).
+  * https://dev.fitbit.com/build/reference/web-api/activity/
+  * https://dev.fitbit.com/build/reference/web-api/activity/get-all-activity-types/
+  * https://dev.fitbit.com/build/reference/web-api/activity-timeseries/get-activity-timeseries-by-date/
+  * 
+
+## Principles
+```ditaa {cmd=true args=["-E"]}
++--------------+    +----------+    +-------------------------+  
+|fitbit servers| -> |py package| -> |tabulated-separated files|  -> dataiku
++--------------+    +----------+    +-------------------------+  
+```
+
 ## References
 ___Initial data science article___  
 https://towardsdatascience.com/collect-your-own-fitbit-data-with-python-ff145fa10873
