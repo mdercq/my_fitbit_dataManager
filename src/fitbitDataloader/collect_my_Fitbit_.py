@@ -2,7 +2,7 @@
 Created on Oct 28, 2017
 @author: fairvel
 """
-from src.coreFunctions.data_collector import DataCollector
+from fitbitDataloader.coreFunctions.data_collector import DataCollector
 
 
 def main():
