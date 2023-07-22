@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="pic">
+    <file>check_png_50.png</file>
+    <file>heartbeat_50px.jpeg</file>
+  </qresource>
+</RCC>

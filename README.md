@@ -9,7 +9,16 @@ and found out I can do the data engineering myself.
 
 I am not trying to manipulate the remote database.
 
-Data processing is done apart with Dataiku platform.
+Data processing is done apart with Dataiku.
+
+### Data to monitor
+* (done) heart rate time series: intraday
+* resting heart rate
+* steps
+* stairs
+* sport => hours
+* sleeping hours
+* sleeping score
 
 ### Data collected
 * Activity: Fitbit user's daily activity data
@@ -17,7 +26,10 @@ Data processing is done apart with Dataiku platform.
   * https://dev.fitbit.com/build/reference/web-api/activity/
   * https://dev.fitbit.com/build/reference/web-api/activity/get-all-activity-types/
   * https://dev.fitbit.com/build/reference/web-api/activity-timeseries/get-activity-timeseries-by-date/
-  * 
+* Heart data
+  * https://dev.fitbit.com/build/reference/web-api/heartrate-timeseries/get-heartrate-timeseries-by-date/
+* Sleep
+  * https://dev.fitbit.com/build/reference/web-api/sleep/get-sleep-log-by-date/
 
 ## Principles
 ```ditaa {cmd=true args=["-E"]}

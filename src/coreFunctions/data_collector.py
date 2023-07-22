@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import sys
 import configparser
 import pandas as pd
 import time
@@ -46,6 +47,9 @@ class DataCollector(object):
             {'data_type': 'heart_rate',
              'container': 'heart_intraday',
              'action': self._heart_rate_data}]
+            # {'data_type': 'heart_logs',
+            #  'container': 'heart_log',
+            #  'action': self._timeseries_heart}
 
         self.request_counter_limit = None
         self.request_counter = 0
@@ -63,7 +67,11 @@ class DataCollector(object):
         self.client_id = self.config['fitbit_auth']['client_id']
         self.client_secret = self.config['fitbit_auth']['client_secret']
         self.request_counter_limit = int(self.config['fitbit_settings']['number_of_request_per_hour'])
-        self.databases_location = self.config['folders']['data_location']
+
+        self.databases_location = self.config['folders']['data_location_windows']
+        if sys.platform == "linux":
+            self.databases_location = self.config['folders']['data_location_linux']
+
         self.initial_date = datetime.strptime(self.config['date_time']['initial_date'], self.date_format_for_request)
         return True
 
@@ -97,7 +105,7 @@ class DataCollector(object):
     # region tools
     @staticmethod
     def _config_logger():
-        log_name = 'logs/{:%Y-%m-%d}.txt'.format(datetime.now())
+        log_name = '../logs/{:%Y-%m-%d}.txt'.format(datetime.now())
         logging.basicConfig(filename=log_name,
                             format='%(asctime)s %(message)s',
                             datefmt=set.ISO_COMPLETE,
@@ -119,7 +127,8 @@ class DataCollector(object):
     def _pause(self):
         # need to wait for 1 hour = 60 minutes * 60 seconds = 3600 seconds
         # I add 5 minutes = 5 * 60 seconds = 300 seconds
-        txt = "Reached the limit of {} requests to Fitbit per hour. Waiting 1h".format(self.request_counter_limit)
+        txt = f"Reached the limit of {self.request_counter_limit} requests to Fitbit per hour." \
+              f"Waiting 1h from {datetime.now()}"
         logging.info(txt)
         print(txt)
         time.sleep(3600 + 300)
@@ -164,14 +173,23 @@ class DataCollector(object):
 
     def _get_files_in_container(self, container):
         """scanning the given folder to get the file list"""
-        folder_to_scan = os.path.join(self.databases_location, container)
-        return [os.path.splitext(f)[0] for f in os.listdir(folder_to_scan)
+        folder_to_scan = self._get_folder(container)
+        return [os.path.splitext(f)[0]
+                for f in os.listdir(folder_to_scan)
                 if os.path.isfile(os.path.join(folder_to_scan, f))]
+
+    def _get_folder(self, container: str) -> str:
+        folder_to_scan = os.path.join(self.databases_location, container)
+        check_folder = os.path.isdir(folder_to_scan)
+        if not check_folder:
+            os.makedirs(folder_to_scan)
+        return folder_to_scan
 
     def _get_last_collected_date(self, list_of_files):
         """the list of file corresponds to the list of dates (thanks to the nomenclature)."""
         if list_of_files:
-            dates = [datetime.strptime(value, self.date_format_for_file) for value in list_of_files]
+            dates = [datetime.strptime(value.split('_')[0], self.date_format_for_file)
+                     for value in list_of_files]
             dates.sort()
             return dates[-1]
         else:
@@ -235,18 +253,25 @@ class DataCollector(object):
         """
         format_date_to_collect = str(date_to_collect.strftime(self.date_format_for_request))
         format_date_for_file = str(date_to_collect.strftime(self.date_format_for_file))
-        fit_stats_sleep = self.auth2_client.sleep(date=format_date_to_collect)
+        collected_response = self.auth2_client.sleep(date=format_date_to_collect)
         filename = os.path.join(self.databases_location, folder_for_collection, format_date_for_file + '.json')
         with open(filename, 'w') as file:
-            file.write(json.dumps(fit_stats_sleep))
+            file.write(json.dumps(collected_response))
 
     def _activity_data(self, folder_for_collection, date_to_collect):
-        """ Sleep data on the night of .... """
         format_date_to_collect = str(date_to_collect.strftime(self.date_format_for_request))
         format_date_for_file = str(date_to_collect.strftime(self.date_format_for_file))
-        fit_stats_sleep = self.auth2_client.activities(date=format_date_to_collect)
+        collected_response = self.auth2_client.activities(date=format_date_to_collect)
         filename = os.path.join(self.databases_location, folder_for_collection, format_date_for_file + '.json')
         with open(filename, 'w') as file:
-            file.write(json.dumps(fit_stats_sleep))
+            file.write(json.dumps(collected_response))
+
+    def _timeseries_heart(self, folder_for_collection, date_to_collect):
+        format_date_to_collect = str(date_to_collect.strftime(self.date_format_for_request))
+        format_date_for_file = str(date_to_collect.strftime(self.date_format_for_file))
+        collected_response = self.auth2_client.time_series("heartrate", base_date=format_date_to_collect)
+        filename = os.path.join(self.databases_location, folder_for_collection, format_date_for_file + '.json')
+        with open(filename, 'w') as file:
+            file.write(json.dumps(collected_response))
 
     # endregion
