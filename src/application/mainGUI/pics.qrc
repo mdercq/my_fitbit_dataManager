@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="mainWindow">
+    <file>ressources/onHold_50.png</file>
+    <file>ressources/heartbeat_50px.jpeg</file>
+    <file>ressources/check_png_50.png</file>
+  </qresource>
+</RCC>
