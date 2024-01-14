@@ -1,277 +1,239 @@
-#!/usr/bin/env python
-import os
-import sys
-import configparser
-import pandas as pd
-import time
-import logging
+import asyncio
 import json
-import fitbit
-from fitbit.exceptions import HTTPTooManyRequests
+import logging
+import os
 from datetime import datetime, timedelta
-from .gather_keys_oauth2 import OAuth2Server
-from ..settings import settings as set
+from typing import Dict
+
+from PySide6.QtCore import QObject, Signal
+
+from fitbitDataloader.settings.settings_manager import SettingsManager
+from .collectors.HearthRateCollector import HearthRateCollector
+from ..settings import fitbit_constants as cte
+from ..settings.exceptions import TooManyRequests
 
 
-class DataCollector(object):
-    """data collection management
-    The philosophy is to collect files in folders: thematic files in dedicated folders. To avoid redundancy,
-    and because of a limitation of access per hours, the 'last' file of each folder represents the starting date for
-    data collection. The file have a name based on the date of the data it collects, so the filenames serve as
-    history holders"""
-    def __init__(self):
+class DataCollector(QObject):
+    """
+    data collection management
+    The philosophy is to collect files in folders: thematic files in dedicated folders.
+    To avoid redundancy, and because of a limitation of access per hours,
+    the 'last' file of each folder represents the starting date for
+    data collection. The file have a name based on the date of the data
+    it collects, so the filenames serve as history holders
+    """
+    # region construction
+    new_data_collected = Signal(str)
+
+    def __init__(self, settings: SettingsManager):
+        super().__init__()
         """Prepare the properties"""
-        self.config = configparser.ConfigParser()
-        self.here = os.path.dirname(os.path.realpath(__file__))
-        self.config_filename = '../settings/myfitbit.ini'
+        self.settings: SettingsManager = settings
+        self._request_counter: int = 0
+        self._paused: bool = True
 
-        # Authorisation and access
-        self.client_id = None
-        self.client_secret = None
-        self.server = None
-        self.access_token = None
-        self.refresh_token = None
-        self.expires_at = None
-        self.auth2_client = None
-        self.got_credentials = False
+        self._hearth_rate_collector = HearthRateCollector(self.settings)
+        self._collectors = [self._hearth_rate_collector]
 
-        self.databases_location = None
-        self.initial_date = None
         self.data_types = [
-            {'data_type': 'sleep',
-             'container': 'sleep_data',
-             'action': self._sleep_data},
-            {'data_type': 'activity',
-             'container': 'activity_data',
-             'action': self._activity_data},
-            {'data_type': 'heart_rate',
-             'container': 'heart_intraday',
-             'action': self._heart_rate_data}]
-            # {'data_type': 'heart_logs',
-            #  'container': 'heart_log',
-            #  'action': self._timeseries_heart}
+            {'data_type': cte.HEART_RATE,
+             'action': self._hearth_rate_collector.run}]
 
-        self.request_counter_limit = None
-        self.request_counter = 0
-        self.date_format_for_request = set.ISO_FORMAT
-        self.date_format_for_file = set.ISO_COMPACT
+        self.last_dates: Dict[datetime] = dict()
+    # endregion
 
-        # configure the logger
-        self._config_logger()
-        logging.info(set.SEP + " New Start " + set.SEP)
+    # region main process
+    @property
+    def is_on_hold(self) -> bool:
+        return self._paused
 
-    # region public methods
-    def read_settings(self):
-        if not self.config.read(os.path.join(self.here, self.config_filename)):
-            return False
-        self.client_id = self.config['fitbit_auth']['client_id']
-        self.client_secret = self.config['fitbit_auth']['client_secret']
-        self.request_counter_limit = int(self.config['fitbit_settings']['number_of_request_per_hour'])
+    @property
+    def current_counter(self) -> int:
+        return self._request_counter
 
-        self.databases_location = self.config['folders']['data_location_windows']
-        if sys.platform == "linux":
-            self.databases_location = self.config['folders']['data_location_linux']
+    def get_last_dates(self):
+        for collector in self._collectors:
+            list_of_files = self._get_files_in_container(collector.main_container)
+            last_collected_date = self._get_last_collected_date(list_of_files)
+            self.last_dates[collector.id] = last_collected_date
 
-        self.initial_date = datetime.strptime(self.config['date_time']['initial_date'], self.date_format_for_request)
-        return True
+    async def collect_data(self):
+        """
+        Will collect all missing data. Missing data are defined by what is found in folders.
+        """
+        logging.info("Start collection job")
 
-    def get_credentials(self):
-        """A couple of tokens are to be collected before getting access
-        For obtaining Access-token and Refresh-token"""
-        self.server = OAuth2Server(self.client_id, self.client_secret)
-        self.server.browser_authorize()
-
-        self.access_token = str(self.server.fitbit.client.session.token['access_token'])
-        self.refresh_token = str(self.server.fitbit.client.session.token['refresh_token'])
-        self.expires_at = str(self.server.fitbit.client.session.token['expires_at'])
-
-        self.auth2_client = fitbit.Fitbit(self.client_id, self.client_secret, oauth2=True,
-                                          access_token=self.access_token, refresh_token=self.refresh_token)
-        self.got_credentials = bool(self.auth2_client)
-        return self.got_credentials
-
-    def collect_data(self):
-        """Will collect all missing data. Missing data are defined by what is found in folders."""
-        if not self.got_credentials:
-            # just in case the user calls this function before connecting to fitbit server
+        self._paused = False
+        if not self.settings.got_credentials:
+            # just in case the user calls this function
+            # before connecting to fitbit server
             logging.warning('credentials were not collected')
+            self._paused = True
             return False
-        for data_requested in self.data_types:
-            self._request_data(data_requested)
 
-        logging.info(set.SEP + " End " + set.SEP)
+        for collector in self._collectors:
+            task = asyncio.create_task(self._request_data(collector))
+            await task
+
+        self._paused = True
+        logging.info(cte.SEP + " End " + cte.SEP)
     # endregion
 
     # region tools
-    @staticmethod
-    def _config_logger():
-        log_name = '../logs/{:%Y-%m-%d}.txt'.format(datetime.now())
-        logging.basicConfig(filename=log_name,
-                            format='%(asctime)s %(message)s',
-                            datefmt=set.ISO_COMPLETE,
-                            level=logging.DEBUG)
-
     @staticmethod
     def _date_range(datetime1, datetime2):
         for n in range(int((datetime2 - datetime1).days) + 1):
             yield datetime1 + timedelta(n)
 
     @staticmethod
-    def _yesterday():
-        return datetime.now() - timedelta(1)
-
-    @staticmethod
     def _first_date_to_collect(last_collected_date):
         return last_collected_date + timedelta(days=1)
 
-    def _pause(self):
+    async def _pause(self):
         # need to wait for 1 hour = 60 minutes * 60 seconds = 3600 seconds
         # I add 5 minutes = 5 * 60 seconds = 300 seconds
-        txt = f"Reached the limit of {self.request_counter_limit} requests to Fitbit per hour." \
-              f"Waiting 1h from {datetime.now()}"
+        txt = (f"Reached the limit of {self.settings.request_counter_limit} "
+               f"requests to Fitbit per hour. " 
+               f"Waiting {self.settings.pause_delay} seconds from {datetime.now()}")
         logging.info(txt)
-        print(txt)
-        time.sleep(3600 + 300)
-        self.request_counter = 0
+
+        await asyncio.sleep(self.settings.pause_delay)
+        logging.info("Pause is over: restart downloading")
+        self._request_counter = 0
+        self._paused = False
     # endregion
 
     # region data collection
-    def _request_data(self, data_requested):
+    async def _request_data(self, collector) -> bool:
         """
         The container needs to be scanned to get the last date to start from.
         The data collection is limited by an hourly rate, so the collectors need
         to temporise, in case a lot of information is missing.
         """
         # list files in data_container
-        if data_requested['container'] is None:
-            return False
-        logging.info("Collecting data for " + data_requested['data_type'])
-        list_of_files = self._get_files_in_container(data_requested['container'])
+        logging.info("Collecting data for " + collector.id)
 
         # get last collected date
-        last_collected_date = self._get_last_collected_date(list_of_files)
+        last_collected_date = self.last_dates[collector.id]
 
         # first date to collect is last collected date + 1
         first_date_to_collect = self._first_date_to_collect(last_collected_date)
 
         # get list if dates to collect
-        list_of_dates = self._date_range(first_date_to_collect, self._yesterday())
-        logging.info('Last day collected so far: {}. '
-                     'The first day to collect will then be {}'.format(last_collected_date, first_date_to_collect))
+        list_of_dates = self._date_range(first_date_to_collect, self.settings.yesterday)
+        logging.info(f'Last day collected so far: {last_collected_date}. '
+                     f'The first day to collect will then be {first_date_to_collect}')
 
         # collect the corresponding data
         for date_to_collect in list_of_dates:
-            if self.request_counter <= self.request_counter_limit - 1:
-                self._collect_data_type(data_requested, date_to_collect)
-                logging.debug(f"Collected data for {date_to_collect} "
-                              f"(counter = {self.request_counter})")
-                self.request_counter += 1
-            else:
+            try:
+                if self._request_counter > self.settings.request_counter_limit - 1:
+                    raise TooManyRequests()
+
+                # task is created but should not run
+                task = asyncio.create_task(self._collect_data_type(collector, date_to_collect))
+                await task
+                logging.debug(f"Date {date_to_collect} collected "
+                              f"(counter = {self._request_counter})")
+                self.last_dates[collector.id] = date_to_collect
+                self._request_counter += 1
+                self.new_data_collected.emit(collector.id)
+            except TooManyRequests:
                 # I prefer to control the request counter myself
-                self._pause()
+                self._paused = True
+                self.new_data_collected.emit(collector.id)
+                await self._pause()
         return True
 
-    def _get_files_in_container(self, container):
+    def _get_files_in_container(self, container_name: str) -> list[str]:
         """scanning the given folder to get the file list"""
-        folder_to_scan = self._get_folder(container)
-        return [os.path.splitext(f)[0]
-                for f in os.listdir(folder_to_scan)
-                if os.path.isfile(os.path.join(folder_to_scan, f))]
+        folder_to_scan = self._get_folder(container_name)
+        logging.debug(f"About to scan {folder_to_scan}")
+        elements = []
+        with os.scandir(folder_to_scan) as it:
+            for entry in it:
+                elements.append(entry)
+        if not elements:
+            return []
+        files_only = [os.path.splitext(f)[0]
+                      for f in os.listdir(folder_to_scan)
+                      if os.path.isfile(os.path.join(folder_to_scan, f))]
+        logging.debug(f"Found {len(files_only)} files")
+        return files_only
 
     def _get_folder(self, container: str) -> str:
-        folder_to_scan = os.path.join(self.databases_location, container)
+        folder_to_scan = os.path.join(self.settings.databases_location,
+                                      container)
         check_folder = os.path.isdir(folder_to_scan)
         if not check_folder:
             os.makedirs(folder_to_scan)
         return folder_to_scan
 
-    def _get_last_collected_date(self, list_of_files):
+    def _get_last_collected_date(self, list_of_files: list[str]) -> datetime:
         """the list of file corresponds to the list of dates (thanks to the nomenclature)."""
         if list_of_files:
-            dates = [datetime.strptime(value.split('_')[0], self.date_format_for_file)
+            dates = [datetime.strptime(value.split('_')[0],
+                                       self.settings.date_format_for_file)
                      for value in list_of_files]
             dates.sort()
             return dates[-1]
         else:
-            return self.initial_date - timedelta(days=1)
+            return self.settings.initial_date - timedelta(days=1)
 
-    def _collect_data_type(self, data_requested, date_to_collect):
-        """the action to perform is selected from a case selector"""
+    async def _collect_data_type(self, collector, date_to_collect):
+        """
+        the action to perform is selected from a case selector
+        If the fitbit replies with a too many request error,
+        the system is put on hold
+        """
         while True:
             try:
-                data_requested['action'](data_requested['container'], date_to_collect)
-            except HTTPTooManyRequests:
-                self._pause()
+                collector.run(date_to_collect)
+            except TooManyRequests:
+                await self._pause()
+                # continue will allow collecting the date which was first blocked
                 continue
-            except Exception:
-                logging.info("Error when try to collect data => there may be nothing to collect")
+            except Exception as e:
+                logging.info(f"Error when trying to collect data: {e}")
+            # break if the collect has been successful
             break
-        return True
     # endregion
 
     # region collectors
-    def _heart_rate_data(self, folder_for_collection, date_to_collect):
-        """
-        Get Heart Rate Time Series
-        The Get Heart Rate Time Series endpoint returns time series data in the specified range for a given resource
-        in the format requested using units in the unit systems that corresponds to the Accept-Language header provided.
-        If you specify earlier dates in the request, the response will retrieve only data since the user's join date
-        or the first log entry date for the requested collection.
-
-        Resource URL
-            There are two acceptable formats for retrieving time series data:
-            GET https://api.fitbit.com/1/user/[user-id]/activities/heart/date/[date]/[period].json
-            GET https://api.fitbit.com/1/user/[user-id]/activities/heart/date/[base-date]/[end-date].json
-        """
-        format_date_to_collect = str(date_to_collect.strftime(self.date_format_for_request))
-        format_date_for_file = str(date_to_collect.strftime(self.date_format_for_file))
-
-        # region intraday heart
-        time_list = []
-        val_list = []
-        fit_stats_hr = self.auth2_client.intraday_time_series('activities/heart', base_date=format_date_to_collect,
-                                                              detail_level='1sec')
-        for i in fit_stats_hr['activities-heart-intraday']['dataset']:
-            val_list.append(i['value'])
-            time_list.append(i['time'])
-        heart_df = pd.DataFrame({'Heart Rate': val_list, 'Time': time_list})
-        filename = os.path.join(self.databases_location, folder_for_collection, format_date_for_file + '.csv')
-        heart_df.to_csv(filename, columns=['Time', 'Heart Rate'], header=True, index=False)
-        # endregion
-
-        # region info about heart
-        filename = os.path.join(self.databases_location, "heart_activity_jsons", format_date_for_file + '.csv')
-        with open(filename, 'w') as file:
-            file.write(json.dumps(fit_stats_hr['activities-heart'][0]['value']))
-        # endregion
-
-        return True
-
     def _sleep_data(self, folder_for_collection, date_to_collect):
         """
         Sleep data on the night of ....
         """
-        format_date_to_collect = str(date_to_collect.strftime(self.date_format_for_request))
-        format_date_for_file = str(date_to_collect.strftime(self.date_format_for_file))
-        collected_response = self.auth2_client.sleep(date=format_date_to_collect)
-        filename = os.path.join(self.databases_location, folder_for_collection, format_date_for_file + '.json')
+        format_date_to_collect = str(date_to_collect.strftime(self.settings.date_format_for_request))
+        format_date_for_file = str(date_to_collect.strftime(self.settings.date_format_for_file))
+        collected_response = self.settings.auth2_client.sleep(date=format_date_to_collect)
+        filename = os.path.join(self.settings.databases_location,
+                                folder_for_collection,
+                                format_date_for_file + '.json')
         with open(filename, 'w') as file:
             file.write(json.dumps(collected_response))
 
     def _activity_data(self, folder_for_collection, date_to_collect):
-        format_date_to_collect = str(date_to_collect.strftime(self.date_format_for_request))
-        format_date_for_file = str(date_to_collect.strftime(self.date_format_for_file))
-        collected_response = self.auth2_client.activities(date=format_date_to_collect)
-        filename = os.path.join(self.databases_location, folder_for_collection, format_date_for_file + '.json')
+        format_date_to_collect = str(date_to_collect.strftime(self.settings.date_format_for_request))
+        format_date_for_file = str(date_to_collect.strftime(self.settings.date_format_for_file))
+        collected_response = self.settings.auth2_client.activities(date=format_date_to_collect)
+        filename = os.path.join(self.settings.databases_location,
+                                folder_for_collection,
+                                format_date_for_file + '.json')
         with open(filename, 'w') as file:
             file.write(json.dumps(collected_response))
 
     def _timeseries_heart(self, folder_for_collection, date_to_collect):
-        format_date_to_collect = str(date_to_collect.strftime(self.date_format_for_request))
-        format_date_for_file = str(date_to_collect.strftime(self.date_format_for_file))
-        collected_response = self.auth2_client.time_series("heartrate", base_date=format_date_to_collect)
-        filename = os.path.join(self.databases_location, folder_for_collection, format_date_for_file + '.json')
+        format_date_to_collect = str(date_to_collect.strftime(self.settings.date_format_for_request))
+        format_date_for_file = str(date_to_collect.strftime(self.settings.date_format_for_file))
+        collected_response = self.settings.auth2_client.time_series("heartrate",
+                                                                    base_date=format_date_to_collect)
+        filename = os.path.join(self.settings.databases_location,
+                                folder_for_collection,
+                                format_date_for_file + '.json')
         with open(filename, 'w') as file:
             file.write(json.dumps(collected_response))
-
     # endregion
+
+# ==================================================================70
+# leave a blank line below

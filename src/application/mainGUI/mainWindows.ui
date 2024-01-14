@@ -3,26 +3,26 @@
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::NonModal</enum>
   </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>510</width>
-    <height>310</height>
+    <height>350</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>510</width>
-    <height>310</height>
+    <height>350</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>510</width>
-    <height>310</height>
+    <height>350</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -39,6 +39,24 @@
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="lbl_connection_status">
+       <property name="font">
+        <font>
+         <pointsize>20</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Not connected with Fitbit</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="indent">
+        <number>-1</number>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QLabel" name="lbl_today">
        <property name="font">
@@ -65,6 +83,15 @@
      </item>
      <item>
       <widget class="Line" name="line">
+       <property name="toolTipDuration">
+        <number>-7</number>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="lineWidth">
+        <number>10</number>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -84,12 +111,12 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>ressources/heartbeat_50px.jpeg</pixmap>
+          <pixmap resource="pics.qrc">:/mainWindow/ressources/heartbeat_50px.jpeg</pixmap>
          </property>
         </widget>
        </item>
        <item row="0" column="2">
-        <widget class="QLabel" name="lbl_heart_left_days">
+        <widget class="QLabel" name="lbl_heart_leftDays">
          <property name="font">
           <font>
            <pointsize>15</pointsize>
@@ -115,12 +142,12 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>ressources/check_png_50.png</pixmap>
+          <pixmap resource="pics.qrc">:/mainWindow/ressources/check_png_50.png</pixmap>
          </property>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLabel" name="lbl_heart_last_date">
+        <widget class="QLabel" name="lbl_heart_lastDate">
          <property name="font">
           <font>
            <pointsize>20</pointsize>
@@ -147,6 +174,58 @@
       </layout>
      </item>
     </layout>
+   </widget>
+   <widget class="QLabel" name="lbl_onHold">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>250</y>
+      <width>86</width>
+      <height>50</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="pics.qrc">:/mainWindow/ressources/onHold_50.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_current_counter">
+    <property name="geometry">
+     <rect>
+      <x>441</x>
+      <y>270</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>15</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_current_counter_title">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>270</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>15</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Current Counter: </string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -186,6 +265,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="pics.qrc"/>
+ </resources>
  <connections/>
 </ui>
